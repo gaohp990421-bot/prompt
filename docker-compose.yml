@@ -1,6 +1,6 @@
 services:
   web:
-    image: gitea.huiyim.cn/gaohuipeng/prompt:latest
+    build: .
     container_name: prompt-platform
     restart: always
     ports:
