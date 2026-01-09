@@ -26,13 +26,16 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Compress Artifacts
+        run: tar -czf deploy.tar.gz .output docker-compose.yml Dockerfile package.json
+
       - name: Transfer Files to Server
         uses: https://gitea.huiyim.cn/actions/scp-action@v0.1.7
         with:
           host: "202.200.206.157"
           username: "root"
           password: "Gaohp@990421"
-          source: ".output/,docker-compose.yml,Dockerfile,package.json"
+          source: "deploy.tar.gz"
           target: "/data/prompt"
 
       - name: Deploy Service
@@ -43,6 +46,10 @@ jobs:
           password: "Gaohp@990421"
           script: |
             cd /data/prompt
+
+            echo "📦 解压构建产物..."
+            tar -xzf deploy.tar.gz
+            rm deploy.tar.gz
 
             echo "🛑 停止并清理旧容器（等待30秒）..."
             docker compose down -t 30
