@@ -56,18 +56,12 @@ jobs:
             echo "📂 传输后目录检查:"
             ls -la
 
-            # 恢复隐藏目录
-            if [ -d "output_dist" ]; then
-              rm -rf .output
-              mv output_dist .output
-              echo "✅ output_dist 已重命名为 .output"
-            else
+            # 验证 output_dist 存在
+            if [ ! -d "output_dist" ]; then
               echo "❌ 错误: output_dist 不存在"
               exit 1
             fi
-
-            echo "📂 最终目录状态:"
-            ls -la
+            echo "✅ output_dist 目录已就绪"
 
             echo "🛑 停止并清理旧容器..."
             docker compose down -t 30 || true

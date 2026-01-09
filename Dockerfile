@@ -10,7 +10,7 @@ ENV PORT=8002
 ENV NODE_ENV=production
 
 # Copy built artifacts from host (CI/local build)
-COPY .output .output
+COPY output_dist output_dist
 
 # Start command
-CMD ["node", ".output/server/index.mjs"]
+CMD ["node", "output_dist/server/index.mjs"]
