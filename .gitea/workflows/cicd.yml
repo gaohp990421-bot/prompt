@@ -47,23 +47,36 @@ jobs:
           username: "root"
           password: "Gaohp@990421"
           script: |
-            cd /data/prompt
+            echo "🔌 连接成功 $(date)"
+            cd /data/prompt || mkdir -p /data/prompt && cd /data/prompt
+
+            echo "📂 初始目录检查:"
+            ls -la
 
             echo "📦 解压构建产物..."
-            tar -xzf deploy.tar.gz
-            rm deploy.tar.gz
+            if [ -f "deploy.tar.gz" ]; then
+              tar -xzf deploy.tar.gz
+              rm deploy.tar.gz
+            else
+              echo "❌ 错误: 找不到 deploy.tar.gz"
+              exit 1
+            fi
 
             # 恢复隐藏目录
             rm -rf .output
-            mv output_dist .output
+            if [ -d "output_dist" ]; then
+              mv output_dist .output
+            else
+               echo "⚠️ 警告: output_dist 不存在"
+            fi
 
-            echo "� 验证文件传输:"
+            echo "📂 解压后验证:"
             ls -la
 
-            echo "�🛑 停止并清理旧容器（等待30秒）..."
+            echo "🛑 停止并清理旧容器..."
             docker compose down -t 30 || true
 
             echo "🚀 启动新服务..."
             docker compose up -d --build --remove-orphans --force-recreate
 
-            echo "🚀 发布完成，等待容器重启..."
+            echo "✅ 发布完成 $(date)"
