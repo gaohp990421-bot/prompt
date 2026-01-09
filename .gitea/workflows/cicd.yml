@@ -27,7 +27,9 @@ jobs:
         run: pnpm build
 
       - name: Compress Artifacts
-        run: tar -czf deploy.tar.gz .output docker-compose.yml Dockerfile package.json
+        run: |
+          mv .output output_dist
+          tar -czf deploy.tar.gz output_dist docker-compose.yml Dockerfile package.json
 
       - name: Transfer Files to Server
         uses: https://gitea.huiyim.cn/actions/scp-action@v0.1.7
@@ -51,8 +53,15 @@ jobs:
             tar -xzf deploy.tar.gz
             rm deploy.tar.gz
 
-            echo "🛑 停止并清理旧容器（等待30秒）..."
-            docker compose down -t 30
+            # 恢复隐藏目录
+            rm -rf .output
+            mv output_dist .output
+
+            echo "� 验证文件传输:"
+            ls -la
+
+            echo "�🛑 停止并清理旧容器（等待30秒）..."
+            docker compose down -t 30 || true
 
             echo "🚀 启动新服务..."
             docker compose up -d --build --remove-orphans --force-recreate
