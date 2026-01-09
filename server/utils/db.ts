@@ -8,11 +8,11 @@ export const useDb = () => {
   if (dbInstance) return dbInstance
 
   const connection = mysql.createPool({
-    host: '192.144.167.138',
-    port: 7306,
-    user: 'root',
-    password: 'Gaohp@990421',
-    database: 'prompt_dev',
+    host: process.env.DB_HOST || '192.144.167.138',
+    port: Number(process.env.DB_PORT) || 7306,
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || 'Gaohp@990421',
+    database: process.env.DB_NAME || 'prompt_dev',
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0

@@ -29,11 +29,11 @@ FROM base AS release
 COPY --from=build /app/.output /app/.output
 
 # Expose port
-EXPOSE 3000
+EXPOSE 8002
 
 # Set environment variables
 ENV HOST=0.0.0.0
-ENV PORT=3000
+ENV PORT=8002
 ENV NODE_ENV=production
 
 # Start command
