@@ -26,35 +26,22 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Compress Artifacts
+      - name: Prepare Artifacts
         run: |
           mv .output output_dist
-          tar -czf deploy.tar.gz output_dist docker-compose.yml Dockerfile package.json
+          echo "📂 准备传输的文件:"
+          ls -la
 
-      - name: Verify Compression
-        run: ls -lh deploy.tar.gz
+      - name: Install sshpass
+        run: sudo apt-get update && sudo apt-get install -y sshpass
 
-      - name: Prepare Server Directory
-        uses: https://gitea.huiyim.cn/actions/ssh-action@v1.0.0
-        with:
-          host: "202.200.206.157"
-          username: "root"
-          password: "Gaohp@990421"
-          script: |
-            echo "🔧 准备部署目录..."
-            mkdir -p /data/prompt
-            chmod 755 /data/prompt
-            # 清理旧的压缩包防止混淆
-            rm -f /data/prompt/deploy.tar.gz
+      - name: Transfer Files via SSH Pipe
+        run: |
+          tar -czf - output_dist docker-compose.yml Dockerfile package.json | \
+            sshpass -p 'Gaohp@990421' ssh -o StrictHostKeyChecking=no root@202.200.206.157 \
+            "mkdir -p /data/prompt && cd /data/prompt && rm -rf output_dist .output && tar -xzf -"
 
-      - name: Transfer Files to Server
-        uses: https://gitea.huiyim.cn/actions/scp-action@v0.1.7
-        with:
-          host: "202.200.206.157"
-          username: "root"
-          password: "Gaohp@990421"
-          source: "deploy.tar.gz"
-          target: "/data/prompt"
+          echo "✅ 文件传输完成"
 
       - name: Deploy Service
         uses: https://gitea.huiyim.cn/actions/ssh-action@v1.0.0
@@ -64,29 +51,22 @@ jobs:
           password: "Gaohp@990421"
           script: |
             echo "🔌 连接成功 $(date)"
-            cd /data/prompt || mkdir -p /data/prompt && cd /data/prompt
+            cd /data/prompt
 
-            echo "📂 初始目录检查:"
+            echo "📂 传输后目录检查:"
             ls -la
 
-            echo "📦 解压构建产物..."
-            if [ -f "deploy.tar.gz" ]; then
-              tar -xzf deploy.tar.gz
-              rm deploy.tar.gz
+            # 恢复隐藏目录
+            if [ -d "output_dist" ]; then
+              rm -rf .output
+              mv output_dist .output
+              echo "✅ output_dist 已重命名为 .output"
             else
-              echo "❌ 错误: 找不到 deploy.tar.gz"
+              echo "❌ 错误: output_dist 不存在"
               exit 1
             fi
 
-            # 恢复隐藏目录
-            rm -rf .output
-            if [ -d "output_dist" ]; then
-              mv output_dist .output
-            else
-               echo "⚠️ 警告: output_dist 不存在"
-            fi
-
-            echo "📂 解压后验证:"
+            echo "📂 最终目录状态:"
             ls -la
 
             echo "🛑 停止并清理旧容器..."
