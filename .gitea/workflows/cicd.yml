@@ -1,4 +1,4 @@
-name: Build and Publish Docker Image
+name: Build and Deploy
 
 on:
   push:
@@ -6,24 +6,50 @@ on:
       - main
 
 jobs:
-  build-publish:
+  build-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: https://gitea.huiyim.cn/actions/checkout@v4
 
-      - name: Docker Login
-        uses: https://gitea.huiyim.cn/actions/docker-login-action@v3
+      - name: Setup Node.js
+        uses: https://gitea.huiyim.cn/actions/setup-node@v4
         with:
-          registry: gitea.huiyim.cn
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          node-version: 20
 
-      - name: Build and Push Docker Image
-        uses: https://gitea.huiyim.cn/actions/docker-build-push-action@v6
+      - name: Install pnpm
+        uses: https://gitea.huiyim.cn/actions/pnpm-action-setup@v3
         with:
-          context: .
-          push: true
-          tags: |
-            gitea.huiyim.cn/gaohuipeng/prompt:latest
-            gitea.huiyim.cn/gaohuipeng/prompt:${{ github.sha }}
+          version: 9
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Transfer Files to Server
+        uses: https://gitea.huiyim.cn/actions/scp-action@v0.1.7
+        with:
+          host: "202.200.206.157"
+          username: "root"
+          password: "Gaohp@990421"
+          source: ".output/,docker-compose.yml,Dockerfile,package.json"
+          target: "/data/prompt"
+
+      - name: Deploy Service
+        uses: https://gitea.huiyim.cn/actions/ssh-action@v1.0.0
+        with:
+          host: "202.200.206.157"
+          username: "root"
+          password: "Gaohp@990421"
+          script: |
+            cd /data/prompt
+
+            echo "🛑 停止并清理旧容器（等待30秒）..."
+            docker compose down -t 30
+
+            echo "🚀 启动新服务..."
+            docker compose up -d --build --remove-orphans --force-recreate
+
+            echo "🚀 发布完成，等待容器重启..."
