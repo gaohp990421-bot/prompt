@@ -1,0 +1,36 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+/* Hide ALL progress bars in toasts - Aggressive overriding */
+[data-sonner-toast] [data-content] + div {
+  display: none !important;
+  height: 0 !important;
+  width: 0 !important;
+}
+
+[data-sonner-toast] > div[style*="width"] {
+  display: none !important;
+}
+
+[data-sonner-toast] [data-visible] ~ div {
+  display: none !important;
+}
+
+/* Specific to Sonner loader/progress */
+[data-sonner-toast-loader],
+[data-loader] {
+  display: none !important;
+}
+
+/* Hide the last div if it's not the content or close button */
+[data-sonner-toast] > div:last-child:not([data-content]):not([data-close-button]) {
+  display: none !important;
+}
+
+/* Hide default bottom-right toaster completely */
+section[data-sonner-toaster]:not([data-position="top-center"]) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
