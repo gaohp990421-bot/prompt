@@ -31,6 +31,9 @@ jobs:
           mv .output output_dist
           tar -czf deploy.tar.gz output_dist docker-compose.yml Dockerfile package.json
 
+      - name: Verify Compression
+        run: ls -lh deploy.tar.gz
+
       - name: Prepare Server Directory
         uses: https://gitea.huiyim.cn/actions/ssh-action@v1.0.0
         with:
