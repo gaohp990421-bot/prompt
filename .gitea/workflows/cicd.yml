@@ -1,0 +1,29 @@
+name: Build and Publish Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: https://gitea.huiyim.cn/actions/checkout@v4
+
+      - name: Docker Login
+        uses: https://gitea.huiyim.cn/actions/docker-login-action@v3
+        with:
+          registry: gitea.huiyim.cn
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Docker Image
+        uses: https://gitea.huiyim.cn/actions/docker-build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            gitea.huiyim.cn/gaohuipeng/prompt:latest
+            gitea.huiyim.cn/gaohuipeng/prompt:${{ github.sha }}

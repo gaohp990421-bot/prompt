@@ -1,0 +1,11 @@
+services:
+  web:
+    image: gitea.huiyim.cn/gaohuipeng/prompt:latest
+    container_name: prompt-platform
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NUXT_SESSION_PASSWORD=changeme_in_production_at_least_32_chars
+      # Add other environment variables here if needed
+      # - DATABASE_URL=...
