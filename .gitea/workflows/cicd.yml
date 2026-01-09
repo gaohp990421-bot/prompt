@@ -18,9 +18,7 @@ jobs:
           node-version: 20
 
       - name: Install pnpm
-        uses: https://gitea.huiyim.cn/actions/pnpm-action-setup@v3
-        with:
-          version: 9
+        run: npm install -g pnpm@9
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
