@@ -31,6 +31,19 @@ jobs:
           mv .output output_dist
           tar -czf deploy.tar.gz output_dist docker-compose.yml Dockerfile package.json
 
+      - name: Prepare Server Directory
+        uses: https://gitea.huiyim.cn/actions/ssh-action@v1.0.0
+        with:
+          host: "202.200.206.157"
+          username: "root"
+          password: "Gaohp@990421"
+          script: |
+            echo "🔧 准备部署目录..."
+            mkdir -p /data/prompt
+            chmod 755 /data/prompt
+            # 清理旧的压缩包防止混淆
+            rm -f /data/prompt/deploy.tar.gz
+
       - name: Transfer Files to Server
         uses: https://gitea.huiyim.cn/actions/scp-action@v0.1.7
         with:
