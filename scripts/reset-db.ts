@@ -4,7 +4,11 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 async function resetDb() {
-  const connection = await createConnection(process.env.DATABASE_URL || 'mysql://root:123456@localhost:3306/prompt_dev')
+  if (!process.env.DATABASE_URL) {
+    console.error('Error: DATABASE_URL environment variable is required')
+    process.exit(1)
+  }
+  const connection = await createConnection(process.env.DATABASE_URL)
   
   console.log('Dropping tables...')
   await connection.execute('DROP TABLE IF EXISTS tags')

@@ -1,12 +1,18 @@
 import mysql from 'mysql2/promise';
+import 'dotenv/config';
 
 async function main() {
+  if (!process.env.DB_HOST || !process.env.DB_PASSWORD) {
+    console.error('Error: Required environment variables not set (DB_HOST, DB_PASSWORD)');
+    process.exit(1);
+  }
+
   const connection = await mysql.createConnection({
-    host: '192.144.167.138',
-    port: 7306,
-    user: 'root',
-    password: 'Gaohp@990421',
-    database: 'prompt_dev'
+    host: process.env.DB_HOST,
+    port: Number(process.env.DB_PORT) || 3306,
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME || 'prompt_platform'
   });
 
   console.log('Dropping tables...');

@@ -46,6 +46,10 @@ function toggleMode() {
   // Keep email for convenience
 }
 
+function navigateToLinuxDo() {
+  window.location.href = '/api/auth/login/linuxdo'
+}
+
 async function onSubmit(event: FormSubmitEvent<any>) {
   isLoading.value = true
   try {
@@ -137,6 +141,26 @@ async function onSubmit(event: FormSubmitEvent<any>) {
               {{ isRegister ? '注册并登录' : '登录' }}
             </UButton>
           </UForm>
+
+          <!-- 第三方登录 Divider -->
+          <div class="relative my-6">
+            <div class="absolute inset-0 flex items-center">
+              <div class="w-full border-t border-gray-200 dark:border-gray-800"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+              <span class="px-2 bg-white dark:bg-gray-900 text-gray-500">Or continue with</span>
+            </div>
+          </div>
+
+          <!-- Linux DO Login Button -->
+          <UButton block size="lg" color="neutral" variant="solid" @click="navigateToLinuxDo"
+            class="font-semibold shadow-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300">
+            <template #leading>
+              <!-- 简单的 Linux 图标，如果有 linux do 专属图标可替换 -->
+              <UIcon name="i-simple-icons-linux" class="w-5 h-5 text-gray-900 dark:text-white" />
+            </template>
+            <span class="text-gray-700 dark:text-gray-200">Linux DO Login</span>
+          </UButton>
 
           <!-- 底部 -->
           <div class="mt-8 pt-6 border-t border-gray-100 dark:border-gray-800 text-center">

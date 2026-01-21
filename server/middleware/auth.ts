@@ -11,7 +11,9 @@ export default defineEventHandler((event) => {
   // Only protect /api routes here. Page protection handled by client middleware.
   if (!path.startsWith('/api')) return
 
+  // 允许公开路由：登录、注册、OAuth 登录/回调
   if (publicRoutes.includes(path)) return
+  if (path.startsWith('/api/auth/login/') || path.startsWith('/api/auth/callback/')) return
 
   // 2. Check Auth
   const token = getCookie(event, 'auth_token')

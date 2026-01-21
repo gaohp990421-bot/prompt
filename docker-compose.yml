@@ -5,10 +5,15 @@ services:
     restart: always
     ports:
       - "8002:8002"
+    env_file:
+      - .env
     environment:
-      - NUXT_SESSION_PASSWORD=7d3a0f7b-9e1c-4b3a-8f5d-2c6e9a7f1b4d_secure
-      - DB_HOST=192.144.167.138
-      - DB_PORT=7306
-      - DB_USER=root
-      - DB_PASSWORD=Gaohp@990421
-      - DB_NAME=prompt_dev
+      - NUXT_SESSION_PASSWORD=${NUXT_SESSION_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT:-3306}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - LINUX_DO_CLIENT_ID=${LINUX_DO_CLIENT_ID}
+      - LINUX_DO_CLIENT_SECRET=${LINUX_DO_CLIENT_SECRET}
+      - LINUX_DO_CALLBACK_URL=${LINUX_DO_CALLBACK_URL}
