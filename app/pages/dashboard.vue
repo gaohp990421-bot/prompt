@@ -4,7 +4,7 @@
       <!-- Header Section -->
       <div class="flex justify-between items-center mb-8">
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">提示词库</h1>
-        <div class="text-sm text-gray-500">共 {{ filteredPrompts.length }} 个提示词</div>
+        <div class="text-sm text-gray-500">共 {{ totalCount }} 个提示词</div>
       </div>
 
       <!-- Filter/Search Placeholder -->
@@ -30,7 +30,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 
         <!-- Create New Card -->
-        <div
+        <div v-if="currentPage === 1"
           class="h-52 bg-white dark:bg-gray-900 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/10 cursor-pointer flex flex-col items-center justify-center transition-all group"
           @click="navigateTo('/prompts/create')">
           <div
@@ -81,6 +81,11 @@
         </div>
       </div>
 
+      <!-- Pagination -->
+      <div v-if="totalPages > 1" class="flex justify-center mt-8">
+        <UPagination v-model="currentPage" :total="totalCount" :items-per-page="pageSize" />
+      </div>
+
       <!-- Delete Confirmation Modal -->
       <UModal v-model:open="isDeleteConfirmOpen" title="确认删除" description="确定要删除这个提示词吗？此操作无法撤销。"
         :ui="{ overlay: 'z-[60]', content: 'z-[60] sm:max-w-sm' }">
@@ -102,10 +107,22 @@ const { success, error } = useAppToast() // custom toast composable
 // --- State ---
 const searchQuery = ref('')
 const selectedTag = ref<string | null>(null)
+const currentPage = ref(1)
+const pageSize = 20
 
 // --- Data Fetching ---
-const { data: promptsData, refresh } = await useFetch('/api/prompts')
+const { data: promptsData, refresh } = await useFetch('/api/prompts', {
+  query: computed(() => ({ page: currentPage.value, pageSize })),
+  watch: [currentPage],
+})
 const { data: tagsData } = await useFetch('/api/tags')
+
+const totalCount = computed(() => {
+  const d = promptsData.value as any
+  return d?.total ?? 0
+})
+
+const totalPages = computed(() => Math.ceil(totalCount.value / pageSize))
 
 const prompts = computed(() => {
   const d = promptsData.value as any
@@ -125,7 +142,7 @@ const popularTags = computed(() => {
   if (availableTags.value.length > 0) return availableTags.value.slice(0, 5)
   // Fallback if no API tags
   const tags = new Set<string>()
-  prompts.value.forEach(p => p.tags.forEach((t: string) => tags.add(t)))
+  prompts.value.forEach((p: any) => p.tags.forEach((t: string) => tags.add(t)))
   return Array.from(tags).slice(0, 10)
 })
 
@@ -133,12 +150,12 @@ const filteredPrompts = computed(() => {
   let result = prompts.value
 
   if (selectedTag.value) {
-    result = result.filter(p => p.tags.includes(selectedTag.value!))
+    result = result.filter((p: any) => p.tags.includes(selectedTag.value!))
   }
 
   if (searchQuery.value) {
     const q = searchQuery.value.toLowerCase()
-    result = result.filter(p =>
+    result = result.filter((p: any) =>
       p.title?.toLowerCase().includes(q) ||
       p.description?.toLowerCase().includes(q) ||
       p.content?.toLowerCase().includes(q)
@@ -185,7 +202,7 @@ const copyContent = (text: string) => {
 }
 
 const sharePrompt = (id: number) => {
-  const url = `${window.location.origin}/prompts/${id}`
+  const url = `${window.location.origin}/share/${id}`
   navigator.clipboard.writeText(url)
   success('链接已复制', '快去分享给小伙伴吧！')
 }

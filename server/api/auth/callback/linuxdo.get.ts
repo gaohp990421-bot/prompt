@@ -59,24 +59,20 @@ export default defineEventHandler(async (event) => {
       userId = newId
     }
 
-    // 4. 设置 Session Cookie
-    setCookie(event, 'auth_token', tokenData.access_token, {
+    // 4. 设置 Session Cookie (auth_token 存用户数据库 ID，与 login.post.ts 保持一致)
+    setCookie(event, 'auth_token', userId.toString(), {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 60 * 60 * 24 * 7, // 7 days
     })
-    
-    setCookie(event, 'user_info', JSON.stringify({
-      id: userId.toString(), // ID 转字符串防止前端精度丢失
-      name: linuxDoUser.name || linuxDoUser.username,
-      avatar: linuxDoUser.avatar_url
-    }), {
+    // Client-side visible cookie for middleware
+    setCookie(event, 'auth_status', '1', {
       httpOnly: false,
       maxAge: 60 * 60 * 24 * 7,
     })
 
-    // 5. 重定向回首页
-    return sendRedirect(event, '/')
+    // 5. 重定向到 dashboard
+    return sendRedirect(event, '/dashboard')
     
   } catch (error: any) {
     console.error('OAuth Callback Error:', error)

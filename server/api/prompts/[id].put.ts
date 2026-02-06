@@ -11,6 +11,7 @@ const UpdatePromptSchema = z.object({
   description: z.string().optional(),
   tags: z.array(z.string()).optional(),
   version: z.string().optional(),
+  isPublic: z.boolean().optional(),
   changelog: z.string().optional(), // Added
 })
 

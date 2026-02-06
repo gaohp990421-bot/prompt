@@ -3,7 +3,7 @@ import { type H3Event, createError } from 'h3'
 export const config = {
   clientId: process.env.LINUX_DO_CLIENT_ID || '',
   clientSecret: process.env.LINUX_DO_CLIENT_SECRET || '',
-  redirectUri: process.env.LINUX_DO_CALLBACK_URL || 'http://localhost:3000/api/auth/callback/linuxdo',
+  redirectUri: process.env.LINUX_DO_CALLBACK_URL || 'https://prompt.huiyim.cn/api/auth/callback/linuxdo',
   // 猜测的 Linux DO Connect 端点 (Discourse 标准)
   authorizationEndpoint: process.env.LINUX_DO_AUTH_URL || 'https://connect.linux.do/oauth2/authorize',
   tokenEndpoint: process.env.LINUX_DO_TOKEN_URL || 'https://connect.linux.do/oauth2/token',

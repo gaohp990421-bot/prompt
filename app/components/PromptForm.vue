@@ -43,6 +43,17 @@
                             </ClientOnly>
                         </div>
 
+                        <!-- Public Share Toggle -->
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                <span class="flex items-center gap-2">
+                                    <UIcon name="i-heroicons-globe-alt" class="w-4 h-4" />
+                                    允许公开分享
+                                </span>
+                            </label>
+                            <USwitch v-model="formState.isPublic" />
+                        </div>
+
                         <!-- Version Input & Changelog -->
                         <div>
                             <div class="flex items-center gap-4 mb-2">
@@ -88,13 +99,13 @@
                                 <div class="flex items-center justify-between mb-1">
                                     <div class="flex items-center gap-2">
                                         <span class="text-sm font-medium text-gray-900 dark:text-white">v{{ v.version
-                                            }}</span>
+                                        }}</span>
                                         <UBadge v-if="v.version === formState.version" size="xs" color="neutral"
                                             variant="soft">当前</UBadge>
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <span class="text-xs text-gray-400">{{ new Date(v.createdAt).toLocaleString()
-                                            }}</span>
+                                        }}</span>
                                         <UIcon name="i-heroicons-arrow-path"
                                             class="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                                     </div>
@@ -163,6 +174,7 @@ const props = defineProps<{
         tags: string[]
         version: string
         changelog?: string
+        isPublic?: boolean
     }
     loading?: boolean
     submitLabel?: string
@@ -177,7 +189,8 @@ const formState = reactive({
     description: '',
     tags: [] as string[],
     version: '1.0.0',
-    changelog: '' // Added changelog field
+    changelog: '', // Added changelog field
+    isPublic: false,
 })
 
 // Initialize state
@@ -189,6 +202,7 @@ watch(() => props.initialState, (val) => {
         formState.tags = [...val.tags]
         formState.version = val.version
         formState.changelog = val.changelog || ''
+        formState.isPublic = val.isPublic ?? false
     }
 }, { immediate: true, deep: true })
 
@@ -342,6 +356,7 @@ const restoreVersion = () => {
 }
 
 defineExpose({
-    refreshVersions: fetchVersions
+    refreshVersions: fetchVersions,
+    getData: () => ({ ...formState })
 })
 </script>

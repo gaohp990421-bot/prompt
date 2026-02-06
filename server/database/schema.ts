@@ -1,4 +1,4 @@
-import { mysqlTable, bigint, varchar, text, timestamp, json } from 'drizzle-orm/mysql-core'
+import { mysqlTable, bigint, varchar, text, timestamp, json, boolean } from 'drizzle-orm/mysql-core'
 
 // 定义 Users 表结构
 export const users = mysqlTable('users', {
@@ -24,6 +24,7 @@ export const prompts = mysqlTable('prompts', {
   description: text('description'),                      // 描述
   tags: json('tags'),                                    // 标签 (JSON array)
   version: varchar('version', { length: 50 }).default('1.0.0'), // 版本
+  isPublic: boolean('is_public').default(false).notNull(),     // 是否公开分享
   createdAt: timestamp('created_at').defaultNow().notNull(), // 创建时间
 })
 

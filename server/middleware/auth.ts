@@ -14,6 +14,7 @@ export default defineEventHandler((event) => {
   // 允许公开路由：登录、注册、OAuth 登录/回调
   if (publicRoutes.includes(path)) return
   if (path.startsWith('/api/auth/login/') || path.startsWith('/api/auth/callback/')) return
+  if (path.startsWith('/api/share/')) return
 
   // 2. Check Auth
   const token = getCookie(event, 'auth_token')

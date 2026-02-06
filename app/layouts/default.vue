@@ -91,7 +91,7 @@
             <div class="space-y-1.5">
               <label class="text-sm font-medium text-gray-700 dark:text-gray-300">新密码 <span
                   class="text-red-500">*</span></label>
-              <UInput v-model="pwdState.newPassword" type="password" placeholder="至少6位字符" size="lg" />
+              <UInput v-model="pwdState.newPassword" type="password" placeholder="至少8位，包含字母和数字" size="lg" />
             </div>
 
             <div class="space-y-1.5">
@@ -159,8 +159,16 @@ async function handleChangePassword() {
     showError('两次输入的密码不一致')
     return
   }
-  if (pwdState.newPassword.length < 6) {
-    showError('新密码至少需要6位')
+  if (pwdState.newPassword.length < 8) {
+    showError('新密码至少需要8位')
+    return
+  }
+  if (!/[a-zA-Z]/.test(pwdState.newPassword)) {
+    showError('新密码必须包含至少一个字母')
+    return
+  }
+  if (!/[0-9]/.test(pwdState.newPassword)) {
+    showError('新密码必须包含至少一个数字')
     return
   }
 

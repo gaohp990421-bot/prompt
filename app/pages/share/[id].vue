@@ -66,7 +66,7 @@ const route = useRoute()
 const { success, error: showError } = useAppToast()
 
 const promptId = computed(() => route.params.id as string)
-const { data, pending, error } = await useFetch(() => `/api/prompts/${promptId.value}`)
+const { data, pending, error } = await useFetch(() => `/api/share/${promptId.value}`)
 
 const prompt = computed(() => {
     const d = data.value as any

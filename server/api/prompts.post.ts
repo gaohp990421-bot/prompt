@@ -9,6 +9,7 @@ const CreatePromptSchema = z.object({
   content: z.string().min(1, '内容不能为空'),
   description: z.string().optional(),
   tags: z.array(z.string()).optional().default([]),
+  isPublic: z.boolean().optional().default(false),
 })
 
 export default defineEventHandler(async (event) => {
@@ -34,7 +35,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const { title, content, description, tags } = validation.data
+  const { title, content, description, tags, isPublic } = validation.data
   const db = useDb()
   if (!db) {
     throw createError({
@@ -53,6 +54,7 @@ export default defineEventHandler(async (event) => {
       content,
       description: description || null,
       tags: tags,
+      isPublic,
       version: '1.0.0',
       createdAt: new Date(),
     })

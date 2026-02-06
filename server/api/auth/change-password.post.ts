@@ -11,7 +11,10 @@ function hashPassword(pwd: string) {
 
 const ChangePasswordSchema = z.object({
   oldPassword: z.string().optional(), // Optional if user never set password? No, UI asks for it.
-  newPassword: z.string().min(6, 'Password must be at least 6 characters'),
+  newPassword: z.string()
+    .min(8, '密码至少需要8位')
+    .regex(/[a-zA-Z]/, '密码必须包含至少一个字母')
+    .regex(/[0-9]/, '密码必须包含至少一个数字'),
 })
 
 export default defineEventHandler(async (event) => {

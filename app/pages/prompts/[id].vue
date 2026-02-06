@@ -12,6 +12,10 @@
                 </div>
                 <!-- Action Buttons -->
                 <div class="flex items-center gap-3">
+                    <UButton color="neutral" variant="soft" icon="i-heroicons-play"
+                        class="rounded-full px-4 font-medium" @click="openTester">
+                        测试
+                    </UButton>
                     <UButton color="primary" :loading="isSaving" class="px-6 rounded-full font-medium"
                         @click="submitForm">
                         保存
@@ -41,6 +45,8 @@
                 <PromptForm ref="formRef" :initial-state="initialState" :loading="isSaving" :prompt-id="promptId"
                     submit-label="保存修改" @submit="savePrompt" @cancel="router.push('/dashboard')" />
             </div>
+
+            <PromptTester v-model="isTesterOpen" :prompt-content="testContent" />
         </div>
     </div>
 </template>
@@ -55,6 +61,16 @@ const promptId = computed(() => route.params.id as string)
 const { data, pending, error, refresh } = await useFetch(() => `/api/prompts/${promptId.value}`)
 
 const isSaving = ref(false)
+const isTesterOpen = ref(false)
+const testContent = ref('')
+
+function openTester() {
+    if (formRef.value && 'getData' in formRef.value) {
+        const data = (formRef.value as any).getData()
+        testContent.value = data.content || ''
+        isTesterOpen.value = true
+    }
+}
 
 const initialState = computed(() => {
     const d = data.value as any
